@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: handoff"
+  short_description: "Compact the current conversation into a handoff document for..."
+  default_prompt: "Use $handoff to work with Matt's handoff skill."
+policy:
+  allow_implicit_invocation: false

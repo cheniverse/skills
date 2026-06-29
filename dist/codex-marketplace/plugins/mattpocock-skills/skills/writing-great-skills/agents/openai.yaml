@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: writing-great-skills"
+  short_description: "Reference for writing and editing skills well — the vocabular..."
+  default_prompt: "Use $writing-great-skills to work with Matt's writing-great-skills skill."
+policy:
+  allow_implicit_invocation: false

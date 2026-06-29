@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: codebase-design"
+  short_description: "Shared vocabulary for designing deep modules."
+  default_prompt: "Use $codebase-design to work with Matt's codebase-design skill."
+policy:
+  allow_implicit_invocation: true

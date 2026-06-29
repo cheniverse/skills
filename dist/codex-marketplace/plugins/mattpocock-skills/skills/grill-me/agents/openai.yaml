@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: grill-me"
+  short_description: "A relentless interview to sharpen a plan or design."
+  default_prompt: "Use $grill-me to work with Matt's grill-me skill."
+policy:
+  allow_implicit_invocation: false

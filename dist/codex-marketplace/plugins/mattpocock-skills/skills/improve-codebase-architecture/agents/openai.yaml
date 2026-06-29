@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: improve-codebase-architecture"
+  short_description: "Scan a codebase for deepening opportunities, present them as..."
+  default_prompt: "Use $improve-codebase-architecture to work with Matt's improve-codebase-architecture skill."
+policy:
+  allow_implicit_invocation: false

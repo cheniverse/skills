@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: triage"
+  short_description: "Move issues and external PRs through a state machine of triag..."
+  default_prompt: "Use $triage to work with Matt's triage skill."
+policy:
+  allow_implicit_invocation: false

@@ -9,6 +9,8 @@
   },
   "license": "MIT",
   "scripts": {
+    "build:codex-plugin": "node scripts/build-codex-plugin.mjs",
+    "check:codex-plugin": "node scripts/check-codex-plugin.mjs",
     "changeset": "changeset",
     "version": "changeset version"
   },

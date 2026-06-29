@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: ask-matt"
+  short_description: "Ask which skill or flow fits your situation."
+  default_prompt: "Use $ask-matt to work with Matt's ask-matt skill."
+policy:
+  allow_implicit_invocation: false

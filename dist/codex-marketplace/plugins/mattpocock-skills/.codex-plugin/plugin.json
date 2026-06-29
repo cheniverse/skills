@@ -1,0 +1,34 @@
+{
+  "name": "mattpocock-skills",
+  "version": "1.0.1",
+  "description": "Matt Pocock's agent skills packaged for Codex.",
+  "author": {
+    "name": "Matt Pocock",
+    "url": "https://github.com/mattpocock"
+  },
+  "homepage": "https://github.com/cheniverse/skills",
+  "repository": "https://github.com/cheniverse/skills",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "skills",
+    "engineering",
+    "productivity"
+  ],
+  "skills": "skills",
+  "interface": {
+    "displayName": "Matt Skills",
+    "shortDescription": "Matt Pocock's engineering and workflow skills.",
+    "longDescription": "A Codex plugin package for Matt Pocock's engineering and productivity agent skills.",
+    "developerName": "Matt Pocock",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use $ask-matt to choose the right Matt skill for this situation."
+    ],
+    "brandColor": "#2563EB"
+  }
+}

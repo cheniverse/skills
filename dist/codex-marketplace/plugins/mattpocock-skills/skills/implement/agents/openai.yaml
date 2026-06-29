@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: implement"
+  short_description: "Implement a piece of work based on a PRD or set of issues."
+  default_prompt: "Use $implement to work with Matt's implement skill."
+policy:
+  allow_implicit_invocation: false

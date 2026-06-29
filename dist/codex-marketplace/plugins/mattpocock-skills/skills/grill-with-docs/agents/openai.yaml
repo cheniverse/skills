@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: grill-with-docs"
+  short_description: "A relentless interview to sharpen a plan or design, which als..."
+  default_prompt: "Use $grill-with-docs to work with Matt's grill-with-docs skill."
+policy:
+  allow_implicit_invocation: false
