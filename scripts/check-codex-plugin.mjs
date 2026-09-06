@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { loadCodexOverrides, loadManualOnlySkills, rewritePackagedSkillReferences } from "./codex-overrides.mjs";
+import { loadCodexSkillPaths, loadCodexOverrides, loadManualOnlySkills, rewritePackagedSkillReferences } from "./codex-overrides.mjs";
 
 const repoRoot = process.cwd();
 const sourceManifestPath = path.join(repoRoot, ".claude-plugin", "plugin.json");
@@ -82,8 +82,9 @@ function main() {
   const rootMarketplaceManifest = readJson(rootMarketplaceManifestPath);
 
   assert(Array.isArray(sourceManifest.skills), "source manifest must include skills array", errors);
+  const sourcePaths = loadCodexSkillPaths(repoRoot, sourceManifest.skills);
   const overrides = loadCodexOverrides(repoRoot, sourceManifest.skills);
-  const manualOnly = loadManualOnlySkills(repoRoot, sourceManifest.skills);
+  const manualOnly = loadManualOnlySkills(repoRoot, sourcePaths);
   assert(outputManifest.skills === "skills", "Codex plugin manifest must point skills to skills", errors);
   assert(marketplaceManifest.name === "cheniverse-skills", "marketplace name must be cheniverse-skills", errors);
   assert(
@@ -104,24 +105,19 @@ function main() {
     errors,
   );
 
-  const sourceSkills = sourceManifest.skills.map((rawPath) => {
-    assert(
-      rawPath.startsWith("./skills/engineering/") ||
-        rawPath.startsWith("./skills/productivity/"),
-      `source manifest includes an out-of-scope skill: ${rawPath}`,
-      errors,
-    );
-
+  const sourceSkills = sourcePaths.map((rawPath) => {
     const sourceSkillRoot = path.join(repoRoot, normalizeManifestPath(rawPath));
     const sourceSkillMd = path.join(sourceSkillRoot, "SKILL.md");
     assert(fs.existsSync(sourceSkillMd), `missing source SKILL.md: ${rawPath}`, errors);
     const originalContents = fs.readFileSync(sourceSkillMd, "utf8");
     const original = parseSkillMarkdown(originalContents, sourceSkillMd);
+    assert(original.name === path.posix.basename(rawPath), `skill name must match source directory: ${rawPath}`, errors);
     const effective = parseSkillMarkdown(overrides.get(rawPath) ?? originalContents, sourceSkillMd);
     assert(effective.name === original.name, `override changes skill name: ${rawPath}`, errors);
     assert(effective.disableModelInvocation === original.disableModelInvocation, `override changes invocation policy: ${rawPath}`, errors);
     return {
       rawPath,
+      personal: rawPath.startsWith("./skills/personal/"),
       ...effective,
       disableModelInvocation: effective.disableModelInvocation || manualOnly.has(effective.name),
     };
@@ -195,8 +191,8 @@ function main() {
     if (fs.existsSync(outputOpenAiYaml)) {
       const yaml = fs.readFileSync(outputOpenAiYaml, "utf8");
       assert(
-        yaml.includes(`display_name: "Matt: ${skill.name}"`),
-        `display_name is not Matt-prefixed for ${skill.name}`,
+        yaml.includes(`display_name: "${skill.personal ? "Personal" : "Matt"}: ${skill.name}"`),
+        `display_name has incorrect source prefix for ${skill.name}`,
         errors,
       );
       assert(

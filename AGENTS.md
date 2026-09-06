@@ -8,7 +8,9 @@
 
 本分支保留 Codex plugin 打包支持，按 [ADR-0002](./docs/adr/0002-personal-skills-plugin-branch.md) 执行。这是个人分支对上游暂缓 Codex plugin 决策的扩展。
 
-源技能清单使用 `.claude-plugin/plugin.json`。个人行为覆盖维护在 `codex/overrides/`，由构建应用；上游 `skills/` 保持原文，不直接编辑生成产物。
+上游源技能清单使用 `.claude-plugin/plugin.json`。个人行为覆盖维护在 `codex/overrides/`，由构建应用；上游技能保持原文，不直接编辑生成产物。
+
+个人新增技能放在 `skills/personal/`，通过 `codex/personal-skills.json` 单独选入个人 Codex 分发。这是本分支的分发例外，不加入上游 manifest 或根 README；维护该 bucket 的 README 和技能自己的调用配置。个人技能在 UI 中使用 `Personal:` 前缀，避免误标为 Matt 上游作品。
 
 覆盖入口保留上游名称和 frontmatter 调用模式，具体触发条件可以收窄。用户明确要求的手动触发名单维护在 `codex/invocation.json` 的 `manualOnly` 中，由构建设置 `allow_implicit_invocation: false`。最终 Codex 调用模式以该名单及构建结果为准；这是个人分发对上游跨平台调用模式一致性约定的例外，其他技能沿用原模式。
 

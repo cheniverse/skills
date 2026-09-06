@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { loadCodexOverrides, loadManualOnlySkills, rewritePackagedSkillReferences } from "./codex-overrides.mjs";
+import { loadCodexSkillPaths, loadCodexOverrides, loadManualOnlySkills, rewritePackagedSkillReferences } from "./codex-overrides.mjs";
 
 const repoRoot = process.cwd();
 const sourceManifestPath = path.join(repoRoot, ".claude-plugin", "plugin.json");
@@ -71,9 +71,9 @@ function formatSkillMarkdown(skill) {
 function formatOpenAiYaml(skill) {
   return [
     "interface:",
-    `  display_name: ${quoteYaml(`Matt: ${skill.name}`)}`,
+    `  display_name: ${quoteYaml(`${skill.personal ? "Personal" : "Matt"}: ${skill.name}`)}`,
     `  short_description: ${quoteYaml(toShortDescription(skill.description))}`,
-    `  default_prompt: ${quoteYaml(`Use $${skill.name} to work with Matt's ${skill.name} skill.`)}`,
+    `  default_prompt: ${quoteYaml(skill.personal ? `Use $${skill.name} to help with my ${skill.name} task.` : `Use $${skill.name} to work with Matt's ${skill.name} skill.`)}`,
     "policy:",
     `  allow_implicit_invocation: ${skill.disableModelInvocation ? "false" : "true"}`,
     "",
@@ -123,7 +123,7 @@ function writePluginManifest(packageJson, skills) {
   const manifest = {
     name: "mattpocock-skills",
     version: packageJson.version,
-    description: "Matt Pocock's skills with personal Codex workflow adaptations.",
+    description: "Matt Pocock's skills with personal Codex adaptations and additional personal skills.",
     author: {
       name: "Matt Pocock",
       url: "https://github.com/mattpocock",
@@ -137,7 +137,7 @@ function writePluginManifest(packageJson, skills) {
       displayName: "Matt Skills",
       shortDescription: "Matt Pocock's engineering and workflow skills.",
       longDescription:
-        "Matt Pocock's engineering and productivity skills, with Cheniverse's personal adaptations for scoped research, review, testing, diagnosis, and implementation.",
+        "Matt Pocock's engineering and productivity skills, with Cheniverse's personal adaptations for scoped research, review, testing, diagnosis, and implementation, plus personal skills such as Nushell.",
       developerName: "Matt Pocock",
       category: "Productivity",
       capabilities: ["Interactive", "Write"],
@@ -198,9 +198,10 @@ function main() {
     throw new Error(".claude-plugin/plugin.json must include a non-empty skills array");
   }
 
+  const sourcePaths = loadCodexSkillPaths(repoRoot, sourceManifest.skills);
   const overrides = loadCodexOverrides(repoRoot, sourceManifest.skills);
-  const manualOnly = loadManualOnlySkills(repoRoot, sourceManifest.skills);
-  const skills = sourceManifest.skills.map((rawSkillPath) => {
+  const manualOnly = loadManualOnlySkills(repoRoot, sourcePaths);
+  const skills = sourcePaths.map((rawSkillPath) => {
     const sourceSkillRoot = path.join(repoRoot, normalizeManifestPath(rawSkillPath));
     const sourceSkillMd = path.join(sourceSkillRoot, "SKILL.md");
 
@@ -210,12 +211,16 @@ function main() {
 
     const sourceContents = fs.readFileSync(sourceSkillMd, "utf8");
     const original = parseSkillMarkdown(sourceContents, sourceSkillMd);
+    if (original.name !== path.posix.basename(rawSkillPath)) {
+      throw new Error(`Skill name must match source directory: ${rawSkillPath}`);
+    }
     const effective = parseSkillMarkdown(overrides.get(rawSkillPath) ?? sourceContents, sourceSkillMd);
     if (effective.name !== original.name || effective.disableModelInvocation !== original.disableModelInvocation) {
       throw new Error(`Codex override must preserve name and invocation policy: ${rawSkillPath}`);
     }
     return {
       rawSkillPath,
+      personal: rawSkillPath.startsWith("./skills/personal/"),
       sourceSkillRoot,
       ...effective,
       disableModelInvocation: effective.disableModelInvocation || manualOnly.has(effective.name),

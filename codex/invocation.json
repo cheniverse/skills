@@ -2,6 +2,8 @@
   "manualOnly": [
     "wizard",
     "writing-for-agents",
-    "resolving-merge-conflicts"
+    "resolving-merge-conflicts",
+    "nushell",
+    "karpathy-guidelines"
   ]
 }

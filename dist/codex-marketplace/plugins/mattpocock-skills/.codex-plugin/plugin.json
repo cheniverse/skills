@@ -1,7 +1,7 @@
 {
   "name": "mattpocock-skills",
-  "version": "1.2.4",
-  "description": "Matt Pocock's skills with personal Codex workflow adaptations.",
+  "version": "1.2.5",
+  "description": "Matt Pocock's skills with personal Codex adaptations and additional personal skills.",
   "author": {
     "name": "Matt Pocock",
     "url": "https://github.com/mattpocock"
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "Matt Skills",
     "shortDescription": "Matt Pocock's engineering and workflow skills.",
-    "longDescription": "Matt Pocock's engineering and productivity skills, with Cheniverse's personal adaptations for scoped research, review, testing, diagnosis, and implementation.",
+    "longDescription": "Matt Pocock's engineering and productivity skills, with Cheniverse's personal adaptations for scoped research, review, testing, diagnosis, and implementation, plus personal skills such as Nushell.",
     "developerName": "Matt Pocock",
     "category": "Productivity",
     "capabilities": [

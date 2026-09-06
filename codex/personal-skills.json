@@ -1,0 +1,6 @@
+{
+  "skills": [
+    "./skills/personal/nushell",
+    "./skills/personal/karpathy-guidelines"
+  ]
+}

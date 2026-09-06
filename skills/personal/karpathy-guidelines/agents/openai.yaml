@@ -1,0 +1,6 @@
+interface:
+  display_name: "Personal: karpathy-guidelines"
+  short_description: "手动检查方案和代码中的过度设计、无关修改，以及验证范围是否合适"
+  default_prompt: "使用 $karpathy-guidelines 检查当前方案或改动中的过度设计和无关修改。"
+policy:
+  allow_implicit_invocation: false

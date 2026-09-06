@@ -31,6 +31,8 @@ Accepted
 
 个人 Codex 行为调整放在 `codex/overrides/`，构建时替换选定技能的入口，保留 `skills/` 上游原文。用登记的源码摘要检测被覆盖入口的上游变化，重新审查后才更新摘要。这样避免直接修改上游文件带来的合并冲突，同时承担少量完整入口覆盖文件的维护成本。部署仍使用生成后的 Codex plugin，不直接修改已安装缓存。
 
+个人新增技能放在 `skills/personal/`，通过 `codex/personal-skills.json` 显式加入个人 Codex 分发，不改上游推广清单。构建分别校验两份来源并拒绝重名；个人技能使用 `Personal:` UI 前缀，与 Matt 上游技能区分。
+
 ## 后果
 
 其他电脑可以直接从 GitHub 安装：

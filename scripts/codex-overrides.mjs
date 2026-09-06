@@ -2,6 +2,25 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 
+// 上游推广清单与个人分发清单分开维护，展平前检查路径和重名。
+export function loadCodexSkillPaths(repoRoot, upstreamPaths) {
+  const { skills: personalPaths } = JSON.parse(fs.readFileSync(path.join(repoRoot, "codex", "personal-skills.json"), "utf8"));
+  for (const [paths, buckets, label] of [
+    [upstreamPaths, "engineering|productivity", "upstream"],
+    [personalPaths, "personal", "personal"],
+  ]) {
+    const pattern = new RegExp(`^\\./skills/(${buckets})/[a-z0-9]+(?:-[a-z0-9]+)*$`);
+    if (!Array.isArray(paths) || paths.some((source) => typeof source !== "string" || !pattern.test(source))) {
+      throw new Error(`Invalid ${label} skill paths`);
+    }
+  }
+  if (upstreamPaths.length === 0) throw new Error("Upstream skills must not be empty");
+  const paths = [...upstreamPaths, ...personalPaths];
+  const names = paths.map((source) => path.posix.basename(source));
+  if (new Set(names).size !== names.length) throw new Error("Duplicate shipped skill name");
+  return paths;
+}
+
 // 忽略检出时的换行转换，内容变化仍要求重新审查覆盖文件。
 export function sourceDigest(contents) {
   return createHash("sha256").update(contents.replace(/\r\n/g, "\n")).digest("hex");

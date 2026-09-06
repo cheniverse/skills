@@ -30,6 +30,7 @@ function fixture(t) {
   write(`${sourcePath}/reference.txt`, "Supporting resource\n");
   write("codex/overrides/research/SKILL.md", adapted);
   write("codex/invocation.json", JSON.stringify({ manualOnly: [] }));
+  write("codex/personal-skills.json", JSON.stringify({ skills: [] }));
   write("codex/overrides/manifest.json", JSON.stringify({ research: { source: sourcePath, sha256: sourceDigest(original) } }));
   write(".claude-plugin/plugin.json", JSON.stringify({ skills: [sourcePath] }));
   write("package.json", JSON.stringify({ version: "1.0.0", license: "MIT" }));
@@ -111,5 +112,48 @@ test("invalid source or policy changes fail before deleting previous artifacts",
   result = run("build-codex-plugin.mjs");
   assert.notEqual(result.status, 0);
   assert.match(result.output, /Upstream SKILL.md changed/);
+  assert.equal(fs.readFileSync(artifact, "utf8"), previous);
+});
+
+test("personal skills ship separately with resources and explicit invocation", (t) => {
+  const { root, write, run } = fixture(t);
+  const personal = "./skills/personal/nushell";
+  write("codex/personal-skills.json", JSON.stringify({ skills: [personal] }));
+  write("codex/invocation.json", JSON.stringify({ manualOnly: ["nushell"] }));
+  write(`${personal}/SKILL.md`, '---\nname: nushell\ndescription: "Nushell commands and scripts"\ndisable-model-invocation: true\n---\nUse the relevant reference.\n');
+  write(`${personal}/references/syntax.md`, "Local syntax reference\n");
+  const built = run("build-codex-plugin.mjs");
+  assert.equal(built.status, 0, built.output);
+  const checked = run("check-codex-plugin.mjs");
+  assert.equal(checked.status, 0, checked.output);
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, ".claude-plugin/plugin.json"), "utf8")).skills, [sourcePath]);
+  const shipped = path.join(root, "dist/codex-marketplace/plugins/mattpocock-skills/skills/nushell");
+  assert.equal(fs.readFileSync(path.join(shipped, "references/syntax.md"), "utf8"), "Local syntax reference\n");
+  const yaml = fs.readFileSync(path.join(shipped, "agents/openai.yaml"), "utf8");
+  assert.match(yaml, /allow_implicit_invocation: false/);
+  assert.match(yaml, /display_name: "Personal: nushell"/);
+});
+
+test("invalid personal paths and collisions preserve previously built artifacts", (t) => {
+  const { root, write, run } = fixture(t);
+  assert.equal(run("build-codex-plugin.mjs").status, 0);
+  const artifact = path.join(root, "dist/codex-plugin/skills/research/SKILL.md");
+  const previous = fs.readFileSync(artifact, "utf8");
+  for (const skills of [
+    ["./skills/misc/unshipped"],
+    ["./skills/personal/../../outside"],
+    ["./skills/personal/research"],
+    ["./skills/personal/nushell", "./skills/personal/nushell"],
+  ]) {
+    write("codex/personal-skills.json", JSON.stringify({ skills }));
+    assert.notEqual(run("build-codex-plugin.mjs").status, 0);
+    assert.notEqual(run("check-codex-plugin.mjs").status, 0);
+    assert.equal(fs.readFileSync(artifact, "utf8"), previous);
+  }
+  write("codex/personal-skills.json", JSON.stringify({ skills: ["./skills/personal/nushell"] }));
+  write("skills/personal/nushell/SKILL.md", original);
+  const mismatched = run("build-codex-plugin.mjs");
+  assert.notEqual(mismatched.status, 0);
+  assert.match(mismatched.output, /Skill name must match source directory/);
   assert.equal(fs.readFileSync(artifact, "utf8"), previous);
 });

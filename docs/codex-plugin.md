@@ -8,7 +8,7 @@
 - 插件名：`mattpocock-skills`
 - marketplace 名：`cheniverse-skills`
 - 可安装产物：`dist/codex-marketplace`
-- 打包来源：`.claude-plugin/plugin.json`
+- 打包来源：`.claude-plugin/plugin.json` 加 `codex/personal-skills.json`
 
 插件内的真实 skill 名保持原样，例如 `$tdd`、`$grill-me`、`$implement`。Codex UI 中通过 `agents/openai.yaml` 显示为 `Matt: tdd`、`Matt: grill-me`、`Matt: implement`。
 
@@ -23,7 +23,13 @@ policy:
 
 ## 个人行为适配
 
-`skills/` 保留上游原文。构建默认使用 `codex/overrides/<skill>/SKILL.md` 替换指定技能的入口，再生成 Codex 产物；同名技能的其他资源继续从上游复制。覆盖文件沿用技能源码的英文风格，本说明使用中文。
+上游技能保留原文。构建默认使用 `codex/overrides/<skill>/SKILL.md` 替换指定技能的入口，再生成 Codex 产物；同名技能的其他资源继续从上游复制。覆盖文件沿用技能源码的英文风格，本说明使用中文。
+
+个人新增技能维护在 `skills/personal/`，由 `codex/personal-skills.json` 单独选入 Codex 插件，不进入上游 manifest 或根 README。目前新增 `nushell`：保留原本地参考资料，入口收窄为手动执行 Nushell 任务，按实际环境选择终端或 MCP，按需读取资料。UI 显示为 `Personal: nushell`，用户可显式调用 `$nushell`。需要保留的小工具按项目约定放在 `.scratch/<task>/`。
+
+`karpathy-guidelines` 同样作为个人技能分发，通过 `$karpathy-guidelines` 手动检查过度设计、无关改动和验证范围。保留简洁、聚焦及可验证的原则；常规可逆选择允许根据上下文继续，不再遇到任何不确定性就停下提问，不设固定行数目标，也不统一要求 TDD 或重复验证。它不作为其他编码、审查技能的必经步骤。
+
+个人技能尚未发布到远程时，本机可将原独立技能目录备份到发现路径之外，再将该入口链接到项目内对应的 `dist/codex-marketplace/plugins/mattpocock-skills/skills/<name>` 产物。修改源技能后需要重新构建。远程插件包含该技能并安装验证通过后，移除这个临时入口，避免两个同名技能同时出现。
 
 | 技能 | 个人版采用方式 |
 | --- | --- |
@@ -34,7 +40,7 @@ policy:
 | `implement` | 按需选择 TDD 和审查，完成要求的检查；提交需要用户已授权 |
 | `ask-matt` | 按任务需要推荐流程，允许直接完成明确小任务；同步以上技能的新行为 |
 
-名称保持不变。用户指定的手动触发名单维护在 `codex/invocation.json`：`wizard`、`writing-for-agents`、`resolving-merge-conflicts` 设置 `allow_implicit_invocation: false`，仍可通过 `$skill` 显式调用。其他技能沿用上游调用模式。当前共 25 个技能：17 个手动、8 个自动。
+名称保持不变。用户指定的手动触发名单维护在 `codex/invocation.json`：`wizard`、`writing-for-agents`、`resolving-merge-conflicts`、`nushell`、`karpathy-guidelines` 设置 `allow_implicit_invocation: false`，仍可通过 `$skill` 显式调用。其他技能沿用上游调用模式。当前构建共 27 个技能：19 个手动、8 个自动。
 
 其他技能仍使用上游实现，这不是对整套技能都完成了适配，也没有测得 GPT-6 的 token 节省比例。采用原则参考 [GPT-6 Astra 官方提示指南](https://developers.openai.com/api/docs/guides/latest-model#prompting-best-practices) 和 [Codex 技能文档](https://learn.chatgpt.com/docs/build-skills)。
 

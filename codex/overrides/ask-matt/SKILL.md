@@ -43,4 +43,9 @@ A larger effort may benefit from clarification, a spec, issues, then implementat
 - `/writing-for-agents`: consult guidance for documents consumed by agents when needed.
 - `/setup-matt-pocock-skills`: configure tracker, triage, and domain conventions before a workflow that actually depends on them. A standalone review, code question, or focused change need not wait for tracker setup.
 
+## Personal additions
+
+- `/nushell`: a personal addition for writing or troubleshooting Nushell commands and scripts. Only the human can invoke it; do not route ordinary structured-data tasks into it automatically.
+- `/karpathy-guidelines`: a personal, focused check for overengineering, unrelated changes, and proportionate verification. Only the human can invoke it; do not add it as a required coding or review step.
+
 Continue in the current conversation while its context is useful. Use supported compaction or a concise handoff when context pressure or a real phase transition warrants it; do not assume a universal token threshold or require a fresh session per issue.

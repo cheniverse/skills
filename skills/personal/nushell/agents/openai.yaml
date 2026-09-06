@@ -1,0 +1,6 @@
+interface:
+  display_name: "Personal: nushell"
+  short_description: "手动编写和排查 Nushell 命令、管道与脚本，按需查阅参考资料"
+  default_prompt: "使用 $nushell 完成当前的 Nushell 命令或脚本任务。"
+policy:
+  allow_implicit_invocation: false
