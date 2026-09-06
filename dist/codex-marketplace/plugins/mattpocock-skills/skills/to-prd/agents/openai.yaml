@@ -1,6 +1,0 @@
-interface:
-  display_name: "Matt: to-prd"
-  short_description: "Turn the current conversation into a PRD and publish it to th..."
-  default_prompt: "Use $to-prd to work with Matt's to-prd skill."
-policy:
-  allow_implicit_invocation: false

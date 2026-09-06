@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: code-review"
+  short_description: "Review the changes since a fixed point (commit, branch, tag,..."
+  default_prompt: "Use $code-review to work with Matt's code-review skill."
+policy:
+  allow_implicit_invocation: true

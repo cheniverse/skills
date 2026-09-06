@@ -1,30 +1,21 @@
-Skills are organized into bucket folders under `skills/`:
+# 仓库工作约定
 
-- `engineering/` — daily code work
-- `productivity/` — daily non-code workflow tools
-- `misc/` — kept around but rarely used
-- `personal/` — tied to my own setup, not promoted
-- `in-progress/` — drafts not yet ready to ship
-- `deprecated/` — no longer used
+开始工作前读取 [CLAUDE.md](./CLAUDE.md)，遵循其中的上游技能维护规则。
 
-Every skill in `engineering/`, `productivity/`, or `misc/` must have a reference in the top-level `README.md` and an entry in `.codex-plugin/plugin.json`. Skills in `personal/`, `in-progress/`, and `deprecated/` must not appear in either.
+## 个人 Codex 分发
 
-Each skill entry in the top-level `README.md` must link the skill name to its `SKILL.md`.
+本分支保留 Codex plugin 打包支持，按 [ADR-0002](./docs/adr/0002-personal-skills-plugin-branch.md) 执行。这是个人分支对上游暂缓 Codex plugin 决策的扩展。
 
-Each bucket folder has a `README.md` that lists every skill in the bucket with a one-line description, with the skill name linked to its `SKILL.md`. Bucket `README.md`s and the top-level `README.md` group entries into **User-invoked** and **Model-invoked**.
+源技能清单使用 `.claude-plugin/plugin.json`。修改源技能或打包脚本后，运行 `npm run build:codex-plugin` 和 `npm run check:codex-plugin`，同步提交 `dist/codex-marketplace` 分发产物。
 
-Every `SKILL.md` is either user-invoked (`disable-model-invocation: true`, reachable only by the human) or model-invoked (model- or user-reachable). For the full definitions, description conventions, and why a user-invoked skill can invoke model-invoked skills but never another user-invoked one, see [docs/invocation.md](./docs/invocation.md).
+## Issue tracker
 
-## Agent skills
+Issues 和 PRD 使用本地 Markdown，约定见 [issue-tracker.md](./docs/agents/issue-tracker.md)。
 
-### Issue tracker
+## Triage labels
 
-Issues and PRDs are tracked as local markdown files under `.scratch/`. See `docs/agents/issue-tracker.md`.
+Triage 角色使用 `needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human` 和 `wontfix`，约定见 [triage-labels.md](./docs/agents/triage-labels.md)。
 
-### Triage labels
+## Domain docs
 
-Triage uses the default mattpocock/skills role names: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, and `wontfix`. See `docs/agents/triage-labels.md`.
-
-### Domain docs
-
-This is a single-context repo: read root `CONTEXT.md` and relevant ADRs under `docs/adr/`. See `docs/agents/domain.md`.
+读取根 `CONTEXT.md`，以及 `.agents/adr/` 和 `docs/adr/` 中与任务相关的 ADR。领域文档约定见 [domain.md](./docs/agents/domain.md)。

@@ -56,11 +56,11 @@ function readFrontmatterString(frontmatter, key) {
   if (!match) return null;
 
   const raw = match[1].trim();
-  if (
-    (raw.startsWith('"') && raw.endsWith('"')) ||
-    (raw.startsWith("'") && raw.endsWith("'"))
-  ) {
-    return raw.slice(1, -1);
+  if (raw.startsWith('"') && raw.endsWith('"')) {
+    return JSON.parse(raw);
+  }
+  if (raw.startsWith("'") && raw.endsWith("'")) {
+    return raw.slice(1, -1).replace(/''/g, "'");
   }
   return raw;
 }
@@ -161,6 +161,11 @@ function main() {
       const outputContents = fs.readFileSync(outputSkillMd, "utf8");
       const outputSkill = parseSkillMarkdown(outputContents, outputSkillMd);
       assert(outputSkill.name === skill.name, `packaged name changed for ${skill.name}`, errors);
+      assert(
+        outputSkill.description === skill.description,
+        `packaged description changed for ${skill.name}`,
+        errors,
+      );
       assert(
         !/disable-model-invocation:\s*true/.test(outputSkill.frontmatter),
         `packaged skill keeps disable-model-invocation: true: ${skill.name}`,

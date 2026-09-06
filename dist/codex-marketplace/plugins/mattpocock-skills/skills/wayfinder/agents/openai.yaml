@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: wayfinder"
+  short_description: "Plan a huge chunk of work (more than one agent session can ho..."
+  default_prompt: "Use $wayfinder to work with Matt's wayfinder skill."
+policy:
+  allow_implicit_invocation: false

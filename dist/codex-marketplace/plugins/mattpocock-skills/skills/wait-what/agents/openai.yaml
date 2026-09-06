@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: wait-what"
+  short_description: "Stop."
+  default_prompt: "Use $wait-what to work with Matt's wait-what skill."
+policy:
+  allow_implicit_invocation: false

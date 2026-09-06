@@ -1,6 +1,6 @@
 interface:
   display_name: "Matt: grilling"
-  short_description: "Interview the user relentlessly about a plan or design."
+  short_description: "Grill the user relentlessly about a plan, decision, or idea."
   default_prompt: "Use $grilling to work with Matt's grilling skill."
 policy:
   allow_implicit_invocation: true

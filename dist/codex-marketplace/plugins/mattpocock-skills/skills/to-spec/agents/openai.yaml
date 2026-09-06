@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: to-spec"
+  short_description: "Turn the current conversation into a spec and publish it to t..."
+  default_prompt: "Use $to-spec to work with Matt's to-spec skill."
+policy:
+  allow_implicit_invocation: false

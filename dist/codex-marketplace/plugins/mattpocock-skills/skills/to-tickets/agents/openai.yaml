@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: to-tickets"
+  short_description: "Break a plan, spec, or the current conversation into a set of..."
+  default_prompt: "Use $to-tickets to work with Matt's to-tickets skill."
+policy:
+  allow_implicit_invocation: false

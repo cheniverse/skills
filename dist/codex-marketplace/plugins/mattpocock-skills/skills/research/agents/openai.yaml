@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: research"
+  short_description: "Investigate a question against high-trust primary sources and..."
+  default_prompt: "Use $research to work with Matt's research skill."
+policy:
+  allow_implicit_invocation: true

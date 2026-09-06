@@ -48,11 +48,11 @@ function readFrontmatterString(frontmatter, key) {
   if (!match) return null;
 
   const raw = match[1].trim();
-  if (
-    (raw.startsWith('"') && raw.endsWith('"')) ||
-    (raw.startsWith("'") && raw.endsWith("'"))
-  ) {
-    return raw.slice(1, -1);
+  if (raw.startsWith('"') && raw.endsWith('"')) {
+    return JSON.parse(raw);
+  }
+  if (raw.startsWith("'") && raw.endsWith("'")) {
+    return raw.slice(1, -1).replace(/''/g, "'");
   }
   return raw;
 }
@@ -80,7 +80,7 @@ function formatOpenAiYaml(skill) {
 }
 
 function quoteYaml(value) {
-  return `"${String(value).replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+  return JSON.stringify(String(value));
 }
 
 function toShortDescription(description) {

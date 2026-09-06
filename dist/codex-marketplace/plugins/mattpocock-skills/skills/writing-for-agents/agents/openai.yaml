@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt: writing-for-agents"
+  short_description: "Writing documents for agents."
+  default_prompt: "Use $writing-for-agents to work with Matt's writing-for-agents skill."
+policy:
+  allow_implicit_invocation: true

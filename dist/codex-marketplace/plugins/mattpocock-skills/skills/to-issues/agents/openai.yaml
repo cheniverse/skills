@@ -1,6 +1,0 @@
-interface:
-  display_name: "Matt: to-issues"
-  short_description: "Break a plan, spec, or PRD into independently-grabbable issue..."
-  default_prompt: "Use $to-issues to work with Matt's to-issues skill."
-policy:
-  allow_implicit_invocation: false
