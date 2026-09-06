@@ -1,6 +1,6 @@
 ---
-name: "diagnosing-bugs"
-description: "Diagnose unclear, persistent, intermittent, or performance bugs using evidence and targeted experiments. Use when the cause is uncertain or an initial fix failed; straightforward errors and code explanations can be handled directly without a formal diagnosis loop."
+name: diagnosing-bugs
+description: Diagnose unclear, persistent, intermittent, or performance bugs using evidence and targeted experiments. Use when the cause is uncertain or an initial fix failed; straightforward errors and code explanations can be handled directly without a formal diagnosis loop.
 ---
 
 Find and verify the cause of the reported symptom. Begin with the smallest investigation that can distinguish a cause; increase effort when the evidence calls for it.

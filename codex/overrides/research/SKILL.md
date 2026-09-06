@@ -1,6 +1,6 @@
 ---
-name: "research"
-description: "Investigate a substantial question by comparing primary sources and resolving conflicting evidence. Use for a research brief, a multi-source investigation, or a delegated research task; ordinary fact lookups and single-page documentation questions can be answered directly."
+name: research
+description: Investigate a substantial question by comparing primary sources and resolving conflicting evidence. Use for a research brief, a multi-source investigation, or a delegated research task; ordinary fact lookups and single-page documentation questions can be answered directly.
 ---
 
 Resolve the research question with cited evidence and clearly identified uncertainty. Match the scope and output to the user's request.

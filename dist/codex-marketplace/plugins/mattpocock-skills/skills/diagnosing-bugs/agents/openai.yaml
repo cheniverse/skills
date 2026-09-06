@@ -1,6 +1,6 @@
 interface:
   display_name: "Matt: diagnosing-bugs"
-  short_description: "Diagnosis loop for hard bugs and performance regressions."
+  short_description: "Diagnose unclear, persistent, intermittent, or performance bu..."
   default_prompt: "Use $diagnosing-bugs to work with Matt's diagnosing-bugs skill."
 policy:
   allow_implicit_invocation: true

@@ -1,6 +1,6 @@
 interface:
   display_name: "Matt: research"
-  short_description: "Investigate a question against high-trust primary sources and..."
+  short_description: "Investigate a substantial question by comparing primary sourc..."
   default_prompt: "Use $research to work with Matt's research skill."
 policy:
   allow_implicit_invocation: true

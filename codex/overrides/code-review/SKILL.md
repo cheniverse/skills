@@ -1,6 +1,6 @@
 ---
-name: "code-review"
-description: "Review a requested diff, branch, PR, or work in progress for correctness, requirement coverage, and documented standards. Use when a code review is requested or a substantial implementation needs independent review; a code explanation or configuration lookup does not need this workflow."
+name: code-review
+description: Review a requested diff, branch, PR, or work in progress for correctness, requirement coverage, and documented standards. Use when a code review is requested or a substantial implementation needs independent review; a code explanation or configuration lookup does not need this workflow.
 ---
 
 Review the actual requested changes against both the requirements and the repository's standards. Keep findings actionable and supported by the diff.

@@ -1,0 +1,7 @@
+{
+  "manualOnly": [
+    "wizard",
+    "writing-for-agents",
+    "resolving-merge-conflicts"
+  ]
+}

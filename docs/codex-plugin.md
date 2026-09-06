@@ -21,6 +21,27 @@ policy:
 
 这表示该 skill 只能由用户显式调用，不会被模型自动隐式触发。
 
+## 个人行为适配
+
+`skills/` 保留上游原文。构建默认使用 `codex/overrides/<skill>/SKILL.md` 替换指定技能的入口，再生成 Codex 产物；同名技能的其他资源继续从上游复制。覆盖文件沿用技能源码的英文风格，本说明使用中文。
+
+| 技能 | 个人版采用方式 |
+| --- | --- |
+| `research` | 收窄为实质性调查；默认在聊天交付，按任务需要写文件或委派，研究子代理不再递归派工 |
+| `code-review` | 覆盖请求范围内的已提交、暂存、未暂存和未跟踪内容；小改动单代理审查，按价值委派并核实汇总发现 |
+| `tdd` | 用户指定或有独立行为预期时采用；复用既有测试边界，取消逐次确认，按风险选择测试层级 |
+| `diagnosing-bugs` | 先检查已有错误、代码和日志，证据不足时升级实验，不再强制复现先于所有分析或固定重复次数 |
+| `implement` | 按需选择 TDD 和审查，完成要求的检查；提交需要用户已授权 |
+| `ask-matt` | 按任务需要推荐流程，允许直接完成明确小任务；同步以上技能的新行为 |
+
+名称保持不变。用户指定的手动触发名单维护在 `codex/invocation.json`：`wizard`、`writing-for-agents`、`resolving-merge-conflicts` 设置 `allow_implicit_invocation: false`，仍可通过 `$skill` 显式调用。其他技能沿用上游调用模式。当前共 25 个技能：17 个手动、8 个自动。
+
+其他技能仍使用上游实现，这不是对整套技能都完成了适配，也没有测得 GPT-6 的 token 节省比例。采用原则参考 [GPT-6 Astra 官方提示指南](https://developers.openai.com/api/docs/guides/latest-model#prompting-best-practices) 和 [Codex 技能文档](https://learn.chatgpt.com/docs/build-skills)。
+
+`codex/overrides/manifest.json` 登记覆盖来源及其上游 `SKILL.md` 的 SHA-256（统一为 LF 后计算）。每次同步上游后，构建会拒绝未经重新审查的入口变化；对照上游更新覆盖文件后再更新摘要。它不锁定上游辅助资源，辅助资源的更新仍需在同步 diff 中审查。
+
+不要手改 `dist/` 或已安装缓存来维护行为。构建和检查会验证覆盖内容、调用模式，以及可安装 marketplace 与中间产物的整树一致性。适配代码的回归检查使用 `node --test scripts/codex-overrides.test.mjs`。
+
 ## 从 GitHub 安装
 
 在新电脑上，从这个 fork 的 `personal-skills-plugin` 分支添加 marketplace：

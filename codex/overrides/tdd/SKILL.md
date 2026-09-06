@@ -1,6 +1,6 @@
 ---
-name: "tdd"
-description: "Develop test-first when the user requests TDD or red-green-refactor, or when a behavior change benefits from a failing regression test with an independent expected result. Merely adding tests or making an implementation change does not require the full TDD workflow."
+name: tdd
+description: Develop test-first when the user requests TDD or red-green-refactor, or when a behavior change benefits from a failing regression test with an independent expected result. Merely adding tests or making an implementation change does not require the full TDD workflow.
 ---
 
 Use red-green cycles to protect observable behavior with tests worth keeping.

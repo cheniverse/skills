@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { loadCodexOverrides, loadManualOnlySkills, rewritePackagedSkillReferences } from "./codex-overrides.mjs";
 
 const repoRoot = process.cwd();
 const sourceManifestPath = path.join(repoRoot, ".claude-plugin", "plugin.json");
@@ -48,7 +49,7 @@ function parseSkillMarkdown(contents, sourcePath) {
     throw new Error(`${sourcePath} frontmatter must include name and description`);
   }
 
-  return { name, description, disableModelInvocation, frontmatter };
+  return { name, description, disableModelInvocation, frontmatter, body: contents.slice(match[0].length) };
 }
 
 function readFrontmatterString(frontmatter, key) {
@@ -81,6 +82,8 @@ function main() {
   const rootMarketplaceManifest = readJson(rootMarketplaceManifestPath);
 
   assert(Array.isArray(sourceManifest.skills), "source manifest must include skills array", errors);
+  const overrides = loadCodexOverrides(repoRoot, sourceManifest.skills);
+  const manualOnly = loadManualOnlySkills(repoRoot, sourceManifest.skills);
   assert(outputManifest.skills === "skills", "Codex plugin manifest must point skills to skills", errors);
   assert(marketplaceManifest.name === "cheniverse-skills", "marketplace name must be cheniverse-skills", errors);
   assert(
@@ -112,9 +115,15 @@ function main() {
     const sourceSkillRoot = path.join(repoRoot, normalizeManifestPath(rawPath));
     const sourceSkillMd = path.join(sourceSkillRoot, "SKILL.md");
     assert(fs.existsSync(sourceSkillMd), `missing source SKILL.md: ${rawPath}`, errors);
+    const originalContents = fs.readFileSync(sourceSkillMd, "utf8");
+    const original = parseSkillMarkdown(originalContents, sourceSkillMd);
+    const effective = parseSkillMarkdown(overrides.get(rawPath) ?? originalContents, sourceSkillMd);
+    assert(effective.name === original.name, `override changes skill name: ${rawPath}`, errors);
+    assert(effective.disableModelInvocation === original.disableModelInvocation, `override changes invocation policy: ${rawPath}`, errors);
     return {
       rawPath,
-      ...parseSkillMarkdown(fs.readFileSync(sourceSkillMd, "utf8"), sourceSkillMd),
+      ...effective,
+      disableModelInvocation: effective.disableModelInvocation || manualOnly.has(effective.name),
     };
   });
 
@@ -162,6 +171,11 @@ function main() {
       const outputSkill = parseSkillMarkdown(outputContents, outputSkillMd);
       assert(outputSkill.name === skill.name, `packaged name changed for ${skill.name}`, errors);
       assert(
+        outputSkill.body.replace(/\r\n/g, "\n") === rewritePackagedSkillReferences(skill.body, expectedNames).replace(/\r\n/g, "\n"),
+        `packaged body is stale or modified for ${skill.name}`,
+        errors,
+      );
+      assert(
         outputSkill.description === skill.description,
         `packaged description changed for ${skill.name}`,
         errors,
@@ -198,6 +212,28 @@ function main() {
   for (const outputDirName of outputSkillDirs) {
     assert(expectedNames.has(outputDirName), `unexpected packaged skill: ${outputDirName}`, errors);
   }
+
+  // 实际安装使用 marketplace 副本，必须校验整棵文件树而非仅 manifest。
+  function compareArtifact(relative = "") {
+    const built = path.join(outputRoot, relative);
+    const shipped = path.join(marketplacePluginRoot, relative);
+    if (!fs.existsSync(shipped)) {
+      errors.push(`marketplace artifact missing: ${relative}`);
+      return;
+    }
+    if (fs.statSync(built).isDirectory()) {
+      if (!fs.statSync(shipped).isDirectory()) {
+        errors.push(`marketplace artifact is not a directory: ${relative}`);
+        return;
+      }
+      const names = fs.readdirSync(built).sort();
+      assert(JSON.stringify(names) === JSON.stringify(fs.readdirSync(shipped).sort()), `marketplace entries differ: ${relative}`, errors);
+      for (const name of names) compareArtifact(path.join(relative, name));
+    } else {
+      assert(fs.statSync(shipped).isFile() && fs.readFileSync(built).equals(fs.readFileSync(shipped)), `marketplace artifact differs: ${relative}`, errors);
+    }
+  }
+  compareArtifact();
 
   if (errors.length > 0) {
     console.error("Codex plugin check failed:");

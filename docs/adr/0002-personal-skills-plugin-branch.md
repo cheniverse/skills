@@ -29,6 +29,8 @@ Accepted
 
 面向 upstream 的 `main` 可以尽量贴近 `mattpocock/skills`；个人 Codex 打包工作和未来个人 skill 工作都放在 `personal-skills-plugin`。
 
+个人 Codex 行为调整放在 `codex/overrides/`，构建时替换选定技能的入口，保留 `skills/` 上游原文。用登记的源码摘要检测被覆盖入口的上游变化，重新审查后才更新摘要。这样避免直接修改上游文件带来的合并冲突，同时承担少量完整入口覆盖文件的维护成本。部署仍使用生成后的 Codex plugin，不直接修改已安装缓存。
+
 ## 后果
 
 其他电脑可以直接从 GitHub 安装：

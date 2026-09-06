@@ -3,4 +3,4 @@ interface:
   short_description: "Use when you need to resolve an in-progress git merge/rebase..."
   default_prompt: "Use $resolving-merge-conflicts to work with Matt's resolving-merge-conflicts skill."
 policy:
-  allow_implicit_invocation: true
+  allow_implicit_invocation: false

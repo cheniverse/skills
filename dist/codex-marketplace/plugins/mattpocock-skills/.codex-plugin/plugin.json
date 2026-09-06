@@ -1,7 +1,7 @@
 {
   "name": "mattpocock-skills",
-  "version": "1.2.3",
-  "description": "Matt Pocock's agent skills packaged for Codex.",
+  "version": "1.2.4",
+  "description": "Matt Pocock's skills with personal Codex workflow adaptations.",
   "author": {
     "name": "Matt Pocock",
     "url": "https://github.com/mattpocock"
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "Matt Skills",
     "shortDescription": "Matt Pocock's engineering and workflow skills.",
-    "longDescription": "A Codex plugin package for Matt Pocock's engineering and productivity agent skills.",
+    "longDescription": "Matt Pocock's engineering and productivity skills, with Cheniverse's personal adaptations for scoped research, review, testing, diagnosis, and implementation.",
     "developerName": "Matt Pocock",
     "category": "Productivity",
     "capabilities": [

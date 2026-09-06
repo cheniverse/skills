@@ -1,6 +1,6 @@
 interface:
   display_name: "Matt: tdd"
-  short_description: "Test-driven development."
+  short_description: "Develop test-first when the user requests TDD or red-green-re..."
   default_prompt: "Use $tdd to work with Matt's tdd skill."
 policy:
   allow_implicit_invocation: true

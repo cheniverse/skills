@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { loadCodexOverrides, loadManualOnlySkills, rewritePackagedSkillReferences } from "./codex-overrides.mjs";
 
 const repoRoot = process.cwd();
 const sourceManifestPath = path.join(repoRoot, ".claude-plugin", "plugin.json");
@@ -118,25 +119,11 @@ function normalizeManifestPath(rawPath) {
   return rawPath.replace(/^\.\//, "").replaceAll("/", path.sep);
 }
 
-function rewritePackagedSkillReferences(body, skillNames) {
-  const namesPattern = [...skillNames]
-    .sort((a, b) => b.length - a.length)
-    .map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-    .join("|");
-
-  if (!namesPattern) return body;
-
-  return body.replace(
-    new RegExp(`(^|[^\\w:/.])\\/(${namesPattern})(?![\\w/-])`, "g"),
-    (_match, prefix, name) => `${prefix}$${name}`,
-  );
-}
-
 function writePluginManifest(packageJson, skills) {
   const manifest = {
     name: "mattpocock-skills",
     version: packageJson.version,
-    description: "Matt Pocock's agent skills packaged for Codex.",
+    description: "Matt Pocock's skills with personal Codex workflow adaptations.",
     author: {
       name: "Matt Pocock",
       url: "https://github.com/mattpocock",
@@ -150,7 +137,7 @@ function writePluginManifest(packageJson, skills) {
       displayName: "Matt Skills",
       shortDescription: "Matt Pocock's engineering and workflow skills.",
       longDescription:
-        "A Codex plugin package for Matt Pocock's engineering and productivity agent skills.",
+        "Matt Pocock's engineering and productivity skills, with Cheniverse's personal adaptations for scoped research, review, testing, diagnosis, and implementation.",
       developerName: "Matt Pocock",
       category: "Productivity",
       capabilities: ["Interactive", "Write"],
@@ -211,10 +198,8 @@ function main() {
     throw new Error(".claude-plugin/plugin.json must include a non-empty skills array");
   }
 
-  fs.rmSync(outputRoot, { recursive: true, force: true });
-  fs.rmSync(marketplaceRoot, { recursive: true, force: true });
-  fs.mkdirSync(outputSkillsRoot, { recursive: true });
-
+  const overrides = loadCodexOverrides(repoRoot, sourceManifest.skills);
+  const manualOnly = loadManualOnlySkills(repoRoot, sourceManifest.skills);
   const skills = sourceManifest.skills.map((rawSkillPath) => {
     const sourceSkillRoot = path.join(repoRoot, normalizeManifestPath(rawSkillPath));
     const sourceSkillMd = path.join(sourceSkillRoot, "SKILL.md");
@@ -224,13 +209,28 @@ function main() {
     }
 
     const sourceContents = fs.readFileSync(sourceSkillMd, "utf8");
+    const original = parseSkillMarkdown(sourceContents, sourceSkillMd);
+    const effective = parseSkillMarkdown(overrides.get(rawSkillPath) ?? sourceContents, sourceSkillMd);
+    if (effective.name !== original.name || effective.disableModelInvocation !== original.disableModelInvocation) {
+      throw new Error(`Codex override must preserve name and invocation policy: ${rawSkillPath}`);
+    }
     return {
       rawSkillPath,
       sourceSkillRoot,
-      ...parseSkillMarkdown(sourceContents, sourceSkillMd),
+      ...effective,
+      disableModelInvocation: effective.disableModelInvocation || manualOnly.has(effective.name),
     };
   });
   const skillNames = new Set(skills.map((skill) => skill.name));
+
+  // 删除目标固定在仓库 dist 内；先校验所有输入，失败时保留已有产物。
+  for (const target of [outputRoot, marketplaceRoot]) {
+    if (path.dirname(target) !== path.join(repoRoot, "dist")) {
+      throw new Error(`Refusing to remove output outside dist: ${target}`);
+    }
+    fs.rmSync(target, { recursive: true, force: true });
+  }
+  fs.mkdirSync(outputSkillsRoot, { recursive: true });
 
   for (const skill of skills) {
     const outputSkillRoot = path.join(outputSkillsRoot, skill.name);
@@ -260,6 +260,7 @@ function main() {
   );
   console.log(`Built Codex plugin with ${skills.length} skills at ${outputRoot}`);
   console.log(`Built local marketplace at ${marketplaceRoot}`);
+  console.log(`Applied ${overrides.size} reviewed personal Codex overrides.`);
 }
 
 main();
